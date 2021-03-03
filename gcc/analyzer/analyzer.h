@@ -23,6 +23,12 @@ along with GCC; see the file COPYING3.  If not see
 
 class graphviz_out;
 
+namespace gcc {
+  class logger;
+}
+
+using gcc::logger;
+
 namespace ana {
 
 /* Forward decls of common types, with indentation to show inheritance.  */
@@ -98,7 +104,6 @@ class rewind_info_t;
 
 class engine;
 class state_machine;
-class logger;
 class visitor;
 
 /* Forward decls of functions.  */

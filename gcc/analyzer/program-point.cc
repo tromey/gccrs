@@ -36,7 +36,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "gimple-iterator.h"
 #include "digraph.h"
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/supergraph.h"
 #include "analyzer/program-point.h"
 #include "sbitmap.h"

@@ -39,7 +39,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "ordered-hash-map.h"
 #include "json.h"
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/sm.h"
 #include "analyzer/pending-diagnostic.h"
 #include "analyzer/diagnostic-manager.h"

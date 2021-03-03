@@ -69,7 +69,7 @@ class impl_region_model_context : public region_model_context
   void on_escaped_function (tree fndecl) FINAL OVERRIDE;
 
   exploded_graph *m_eg;
-  log_user m_logger;
+  gcc::log_user m_logger;
   const exploded_node *m_enode_for_diag;
   const program_state *m_old_state;
   program_state *m_new_state;
@@ -814,7 +814,7 @@ private:
 
   const supergraph &m_sg;
 
-  log_user m_logger;
+  gcc::log_user m_logger;
 
   /* Map from point/state to exploded node.
      To avoid duplication we store point_and_state

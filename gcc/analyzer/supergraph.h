@@ -21,6 +21,12 @@ along with GCC; see the file COPYING3.  If not see
 #ifndef GCC_ANALYZER_SUPERGRAPH_H
 #define GCC_ANALYZER_SUPERGRAPH_H
 
+namespace gcc {
+class logger;
+}
+
+using gcc::logger;
+
 using namespace ana;
 
 namespace ana {
@@ -37,8 +43,6 @@ class superedge;
     class switch_cfg_superedge;
 class supercluster;
 class dot_annotator;
-
-class logger;
 
 /* An enum for discriminating between superedge subclasses.  */
 

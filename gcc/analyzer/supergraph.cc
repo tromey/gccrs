@@ -51,7 +51,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "cfg.h"
 #include "digraph.h"
 #include "analyzer/supergraph.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 
 #if ENABLE_ANALYZER
 

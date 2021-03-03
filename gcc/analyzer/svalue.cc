@@ -44,7 +44,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "function.h"
 #include "json.h"
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "options.h"
 #include "cgraph.h"
 #include "cfg.h"

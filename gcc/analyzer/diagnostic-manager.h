@@ -87,7 +87,7 @@ class path_builder;
    This also lets us compute shortest_paths once, rather than
    per-diagnostic.  */
 
-class diagnostic_manager : public log_user
+class diagnostic_manager : public gcc::log_user
 {
 public:
   diagnostic_manager (logger *logger, engine *eng, int verbosity);

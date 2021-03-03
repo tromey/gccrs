@@ -47,7 +47,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "cgraph.h"
 #include "analyzer/supergraph.h"
 #include "analyzer/program-point.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/state-purge.h"
 
 #if ENABLE_ANALYZER
@@ -198,7 +198,7 @@ state_purge_per_ssa_name::state_purge_per_ssa_name (const state_purge_map &map,
 
   /* Process worklist by walking backwards until we reach the def stmt.  */
   {
-    log_scope s (map.get_logger (), "processing worklist");
+    gcc::log_scope s (map.get_logger (), "processing worklist");
     while (worklist.length () > 0)
       {
 	function_point point = worklist.pop ();

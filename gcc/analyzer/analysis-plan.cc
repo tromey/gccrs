@@ -30,7 +30,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "json.h"
 #include "analyzer/analyzer.h"
 #include "diagnostic-core.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/analysis-plan.h"
 #include "ordered-hash-map.h"
 #include "options.h"

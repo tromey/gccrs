@@ -1,4 +1,4 @@
-/* Hierarchical log messages for the analyzer.
+/* Hierarchical log messages
    Copyright (C) 2014-2021 Free Software Foundation, Inc.
    Contributed by David Malcolm <dmalcolm@redhat.com>.
 
@@ -21,12 +21,11 @@ along with GCC; see the file COPYING3.  If not see
 #include "config.h"
 #include "system.h"
 #include "coretypes.h"
-#include "toplev.h" /* for print_version */
+#include "toplev.h"	  /* for print_version */
 #include "pretty-print.h" /* for print_version */
 #include "diagnostic.h"
 #include "tree-diagnostic.h"
-
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 
 #if ENABLE_ANALYZER
 
@@ -34,21 +33,16 @@ along with GCC; see the file COPYING3.  If not see
 #pragma GCC diagnostic ignored "-Wformat-diag"
 #endif
 
-namespace ana {
+namespace gcc {
 
 /* Implementation of class logger.  */
 
 /* ctor for logger.  */
 
-logger::logger (FILE *f_out,
-		int, /* flags */
-		int /* verbosity */,
-		const pretty_printer &reference_pp) :
-  m_refcount (0),
-  m_f_out (f_out),
-  m_indent_level (0),
-  m_log_refcount_changes (false),
-  m_pp (reference_pp.clone ())
+logger::logger (FILE *f_out, int, /* flags */
+		int /* verbosity */, const pretty_printer *reference_pp)
+  : m_refcount (0), m_f_out (f_out), m_indent_level (0),
+    m_log_refcount_changes (false), m_pp (reference_pp->clone ())
 {
   pp_show_color (m_pp) = 0;
   pp_buffer (m_pp)->stream = f_out;
@@ -80,8 +74,8 @@ logger::incref (const char *reason)
 {
   m_refcount++;
   if (m_log_refcount_changes)
-    log ("%s: reason: %s refcount now %i ",
-	 __PRETTY_FUNCTION__, reason, m_refcount);
+    log ("%s: reason: %s refcount now %i ", __PRETTY_FUNCTION__, reason,
+	 m_refcount);
 }
 
 /* Decrement the reference count of the logger,
@@ -93,8 +87,8 @@ logger::decref (const char *reason)
   gcc_assert (m_refcount > 0);
   --m_refcount;
   if (m_log_refcount_changes)
-    log ("%s: reason: %s refcount now %i",
-	 __PRETTY_FUNCTION__, reason, m_refcount);
+    log ("%s: reason: %s refcount now %i", __PRETTY_FUNCTION__, reason,
+	 m_refcount);
   if (m_refcount == 0)
     delete this;
 }
@@ -182,7 +176,6 @@ logger::enter_scope (const char *scope_name, const char *fmt, va_list *ap)
   inc_indent ();
 }
 
-
 /* Record the exit from a particular scope, restoring the indent level to
    before the scope was entered.  */
 
@@ -203,7 +196,7 @@ logger::exit_scope (const char *scope_name)
 log_user::log_user (logger *logger) : m_logger (logger)
 {
   if (m_logger)
-    m_logger->incref("log_user ctor");
+    m_logger->incref ("log_user ctor");
 }
 
 /* The destructor for log_user.  */
@@ -211,7 +204,7 @@ log_user::log_user (logger *logger) : m_logger (logger)
 log_user::~log_user ()
 {
   if (m_logger)
-    m_logger->decref("log_user dtor");
+    m_logger->decref ("log_user dtor");
 }
 
 /* Set the logger for a log_user, managing the reference counts
@@ -227,6 +220,6 @@ log_user::set_logger (logger *logger)
   m_logger = logger;
 }
 
-} // namespace ana
+} // namespace gcc
 
 #endif /* #if ENABLE_ANALYZER */

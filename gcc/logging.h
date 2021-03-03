@@ -1,4 +1,4 @@
-/* Hierarchical log messages for the analyzer.
+/* GCC Logging
    Copyright (C) 2014-2021 Free Software Foundation, Inc.
    Contributed by David Malcolm <dmalcolm@redhat.com>.
 
@@ -18,44 +18,49 @@ You should have received a copy of the GNU General Public License
 along with GCC; see the file COPYING3.  If not see
 <http://www.gnu.org/licenses/>.  */
 
-/* Adapted from jit-logging.h.  */
+#ifndef GCC_LOGGING_H
+#define GCC_LOGGING_H
 
-#ifndef ANALYZER_LOGGING_H
-#define ANALYZER_LOGGING_H
+#include "diagnostic-core.h"
 
-namespace ana {
+namespace gcc {
 
-/* A logger encapsulates a logging stream: a way to send
+/* A gcc::logger encapsulates a logging stream: a way to send
    lines of pertinent information to a FILE *.  */
 
 class logger
 {
- public:
-  logger (FILE *f_out, int flags, int verbosity, const pretty_printer &reference_pp);
+public:
+  logger (FILE *f_out, int flags, int verbosity,
+	  const pretty_printer *reference_pp);
+
   ~logger ();
 
   void incref (const char *reason);
   void decref (const char *reason);
 
-  void log (const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(2, 3);
-  void log_va (const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(2, 0);
+  void log (const char *fmt, ...) ATTRIBUTE_GCC_DIAG (2, 3);
+  void log_va (const char *fmt, va_list *ap) ATTRIBUTE_GCC_DIAG (2, 0);
   void start_log_line ();
-  void log_partial (const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(2, 3);
-  void log_va_partial (const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(2, 0);
+  void log_partial (const char *fmt, ...) ATTRIBUTE_GCC_DIAG (2, 3);
+  void log_va_partial (const char *fmt, va_list *ap) ATTRIBUTE_GCC_DIAG (2, 0);
   void end_log_line ();
 
   void enter_scope (const char *scope_name);
   void enter_scope (const char *scope_name, const char *fmt, va_list *ap)
-    ATTRIBUTE_GCC_DIAG(3, 0);
+    ATTRIBUTE_GCC_DIAG (3, 0);
   void exit_scope (const char *scope_name);
   void inc_indent () { m_indent_level++; }
   void dec_indent () { m_indent_level--; }
 
-  pretty_printer *get_printer () const { return m_pp; }
+  bool has_pretty_printer () const { return m_pp != nullptr; }
+
+  pretty_printer *get_printer () const
+  {
+    gcc_assert (m_pp != nullptr);
+    return m_pp;
+  }
+
   FILE *get_file () const { return m_f_out; }
 
 private:
@@ -68,7 +73,7 @@ private:
   pretty_printer *m_pp;
 };
 
-/* The class log_scope is an RAII-style class intended to make
+/* The class gcc::jit::log_scope is an RAII-style class intended to make
    it easy to notify a logger about entering and exiting the body of a
    given function.  */
 
@@ -77,10 +82,10 @@ class log_scope
 public:
   log_scope (logger *logger, const char *name);
   log_scope (logger *logger, const char *name, const char *fmt, ...)
-    ATTRIBUTE_GCC_DIAG(4, 5);
+    ATTRIBUTE_GCC_DIAG (4, 5);
   ~log_scope ();
 
- private:
+private:
   DISABLE_COPY_AND_ASSIGN (log_scope);
 
   logger *m_logger;
@@ -96,10 +101,8 @@ public:
    We also need to hold a reference on it, to avoid a use-after-free
    when logging the cleanup of the owner of the logger.  */
 
-inline
-log_scope::log_scope (logger *logger, const char *name) :
- m_logger (logger),
- m_name (name)
+inline log_scope::log_scope (logger *logger, const char *name)
+  : m_logger (logger), m_name (name)
 {
   if (m_logger)
     {
@@ -108,10 +111,9 @@ log_scope::log_scope (logger *logger, const char *name) :
     }
 }
 
-inline
-log_scope::log_scope (logger *logger, const char *name, const char *fmt, ...):
- m_logger (logger),
- m_name (name)
+inline log_scope::log_scope (logger *logger, const char *name, const char *fmt,
+			     ...)
+  : m_logger (logger), m_name (name)
 {
   if (m_logger)
     {
@@ -123,12 +125,10 @@ log_scope::log_scope (logger *logger, const char *name, const char *fmt, ...):
     }
 }
 
-
 /* The destructor for log_scope; essentially the opposite of
    the constructor.  */
 
-inline
-log_scope::~log_scope ()
+inline log_scope::~log_scope ()
 {
   if (m_logger)
     {
@@ -143,15 +143,14 @@ log_scope::~log_scope ()
 
 class log_user
 {
- public:
+public:
   log_user (logger *logger);
   ~log_user ();
 
-  logger * get_logger () const { return m_logger; }
-  void set_logger (logger * logger);
+  logger *get_logger () const { return m_logger; }
+  void set_logger (logger *logger);
 
-  void log (const char *fmt, ...) const
-    ATTRIBUTE_GCC_DIAG(2, 3);
+  void log (const char *fmt, ...) const ATTRIBUTE_GCC_DIAG (2, 3);
 
   void start_log_line () const;
   void end_log_line () const;
@@ -172,7 +171,7 @@ class log_user
     return m_logger->get_file ();
   }
 
- private:
+private:
   DISABLE_COPY_AND_ASSIGN (log_user);
 
   logger *m_logger;
@@ -240,27 +239,24 @@ log_user::exit_scope (const char *scope_name)
 /* If the given logger is non-NULL, log entry/exit of this scope to
    it, identifying it using __PRETTY_FUNCTION__.  */
 
-#define LOG_SCOPE(LOGGER)		\
-  log_scope s (LOGGER, __PRETTY_FUNCTION__)
+#define LOG_SCOPE(LOGGER) gcc::log_scope s (LOGGER, __PRETTY_FUNCTION__)
 
 /* If the given logger is non-NULL, log entry/exit of this scope to
    it, identifying it using __func__.  */
 
-#define LOG_FUNC(LOGGER) \
-  log_scope s (LOGGER, __func__)
+#define LOG_FUNC(LOGGER) gcc::log_scope s (LOGGER, __func__)
 
-#define LOG_FUNC_1(LOGGER, FMT, A0)	\
-  log_scope s (LOGGER, __func__, FMT, A0)
+#define LOG_FUNC_1(LOGGER, FMT, A0) gcc::log_scope s (LOGGER, __func__, FMT, A0)
 
-#define LOG_FUNC_2(LOGGER, FMT, A0, A1)		\
-  log_scope s (LOGGER, __func__, FMT, A0, A1)
+#define LOG_FUNC_2(LOGGER, FMT, A0, A1)                                        \
+  gcc::log_scope s (LOGGER, __func__, FMT, A0, A1)
 
-#define LOG_FUNC_3(LOGGER, FMT, A0, A1, A2)	\
-  log_scope s (LOGGER, __func__, FMT, A0, A1, A2)
+#define LOG_FUNC_3(LOGGER, FMT, A0, A1, A2)                                    \
+  gcc::log_scope s (LOGGER, __func__, FMT, A0, A1, A2)
 
-#define LOG_FUNC_4(LOGGER, FMT, A0, A1, A2, A3) \
-  log_scope s (LOGGER, __func__, FMT, A0, A1, A2, A3)
+#define LOG_FUNC_4(LOGGER, FMT, A0, A1, A2, A3)                                \
+  gcc::log_scope s (LOGGER, __func__, FMT, A0, A1, A2, A3)
 
-} // namespace ana
+} // namespace gcc
 
-#endif /* ANALYZER_LOGGING_H */
+#endif /* GCC_LOGGING_H */

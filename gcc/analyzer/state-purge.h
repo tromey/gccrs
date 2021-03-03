@@ -74,7 +74,7 @@ namespace ana {
    different points in the program, so that we can simplify program_state
    objects, in the hope of reducing state-blowup.  */
 
-class state_purge_map : public log_user
+class state_purge_map : public gcc::log_user
 {
 public:
   typedef ordered_hash_map<tree, state_purge_per_ssa_name *> map_t;

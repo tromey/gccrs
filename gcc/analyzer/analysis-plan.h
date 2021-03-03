@@ -31,7 +31,7 @@ namespace ana {
    - which callgraph edges should use call summaries
    TODO: the above is a work-in-progress.  */
 
-class analysis_plan : public log_user
+class analysis_plan : public gcc::log_user
 {
 public:
   analysis_plan (const supergraph &sg, logger *logger);

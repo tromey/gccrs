@@ -39,7 +39,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "selftest.h"
 #include "json.h"
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/call-string.h"
 #include "analyzer/program-point.h"
 #include "analyzer/store.h"
@@ -350,7 +350,7 @@ public:
     return NULL_TREE;
   }
 
-  log_user m_logger;
+  gcc::log_user m_logger;
   exploded_graph &m_eg;
   const exploded_node *m_enode_for_diag;
   const program_state *m_old_state;
@@ -3243,7 +3243,7 @@ exploded_graph::log_stats () const
        ++iter)
     {
       function *fn = (*iter).first;
-      log_scope s (logger, function_name (fn));
+      gcc::log_scope s (logger, function_name (fn));
       (*iter).second->log (logger);
     }
 
@@ -4817,10 +4817,10 @@ run_checkers ()
     }
 
   {
-    log_user the_logger (NULL);
+	  gcc::log_user the_logger (NULL);
     if (dump_fout)
       the_logger.set_logger (new logger (dump_fout, 0, 0,
-					 *global_dc->printer));
+					 global_dc->printer));
     LOG_SCOPE (the_logger.get_logger ());
 
     impl_run_checkers (the_logger.get_logger ());

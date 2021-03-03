@@ -35,7 +35,7 @@ extern bool any_pointer_p (tree var);
    Manages a set of state objects, and has various virtual functions
    for pattern-matching on statements.  */
 
-class state_machine : public log_user
+class state_machine : public gcc::log_user
 {
 public:
   /* States are represented by immutable objects, owned by the state

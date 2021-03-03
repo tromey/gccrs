@@ -33,7 +33,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "tree-diagnostic.h"
 #include "json.h"
 #include "analyzer/analyzer.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/sm.h"
 
 #if ENABLE_ANALYZER

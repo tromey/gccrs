@@ -28,7 +28,7 @@ along with GCC; see the file COPYING3.  If not see
 #include "json.h"
 #include "analyzer/analyzer.h"
 #include "diagnostic-event-id.h"
-#include "analyzer/analyzer-logging.h"
+#include "logging.h"
 #include "analyzer/sm.h"
 #include "diagnostic-event-id.h"
 #include "analyzer/sm.h"
