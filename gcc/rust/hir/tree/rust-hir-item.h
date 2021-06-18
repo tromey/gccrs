@@ -2661,6 +2661,11 @@ public:
   // Returns whether trait has trait items.
   bool has_trait_items () const { return !trait_items.empty (); }
 
+  std::vector<std::unique_ptr<TraitItem> > &get_trait_items ()
+  {
+    return trait_items;
+  }
+
   // Mega-constructor
   Trait (Analysis::NodeMapping mappings, Identifier name, bool is_unsafe,
 	 std::vector<std::unique_ptr<GenericParam> > generic_params,
